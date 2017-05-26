@@ -4,22 +4,23 @@ import hashlib
 import utils
 import utils_lung
 import pathfinder
-
+#计算机实现的随机数生成通常为伪随机数生成器，为了使得具备随机性的代码最终的结果可复现，需要设置相同的种子值；
+#使用 np.random.RandomState()获取随机数生成器
 rng = np.random.RandomState(42)
 
 
-tvt_ids = utils.load_pkl(pathfinder.VALIDATION_SPLIT_PATH)
+tvt_ids = utils.load_pkl(pathfinder.VALIDATION_SPLIT_PATH)#utils.load_pkl：返回一个pickle对象
 train_pids, valid_pids, test_pids = tvt_ids['training'], tvt_ids['validation'], tvt_ids['test']
 all_pids = train_pids + valid_pids + test_pids
-print 'total number of pids', len(all_pids)
+print 'total number of pids', len(all_pids)#pid在这里代表的到底是什么？PID是病人ID；要搞明白这里是怎么放置的，以便存放自己的数据
 
-id2label = utils_lung.read_labels(pathfinder.LABELS_PATH)
+id2label = utils_lung.read_labels(pathfinder.LABELS_PATH)#id2label是一个字典，键是id，值是label
 id2label_test = utils_lung.read_test_labels(pathfinder.TEST_LABELS_PATH)
-id2label.update(id2label_test)
+id2label.update(id2label_test)#字典的update用法，把字典id2label_test添加到id2label字典中
 n_patients = len(id2label)
 
-pos_ids = []
-neg_ids = []
+pos_ids = []#存储癌症患者的病人ID
+neg_ids = []#存储非癌症患者的病人ID
 
 for pid, label in id2label.iteritems():
 	if label ==1 :
@@ -29,16 +30,16 @@ for pid, label in id2label.iteritems():
 	else:
 		raise ValueError("weird shit is going down")
 
-pos_ratio = 1. * len(pos_ids) / n_patients 
+pos_ratio = 1. * len(pos_ids) / n_patients #计算癌症患者在病人当中所占的比例
 print 'pos id ratio', pos_ratio
 
 split_ratio = 0.15
-n_target_split = int(np.round(split_ratio*n_patients))
+n_target_split = int(np.round(split_ratio*n_patients))#返回浮点数的四舍五入值，计算分割出来的病人数目
 print 'given split ratio', split_ratio
 print 'target split ratio', 1. * n_target_split / n_patients
 
-n_pos_ftest = int(np.round(split_ratio*len(pos_ids)))
-n_neg_ftest = int(np.round(split_ratio*len(neg_ids)))
+n_pos_ftest = int(np.round(split_ratio*len(pos_ids)))#从癌症病人中分割
+n_neg_ftest = int(np.round(split_ratio*len(neg_ids)))#从非癌症病人中分割
 
 final_pos_test = rng.choice(pos_ids,n_pos_ftest, replace=False)
 final_neg_test = rng.choice(neg_ids,n_neg_ftest, replace=False)
