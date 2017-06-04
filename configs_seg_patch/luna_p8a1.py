@@ -50,7 +50,7 @@ batch_size = 4
 nbatches_chunk = 8
 chunk_size = batch_size * nbatches_chunk
 
-train_valid_ids = utils.load_pkl(pathfinder.LUNA_VALIDATION_SPLIT_PATH)
+train_valid_ids = utils.load_pkl(pathfinder.LUNA_VALIDATION_SPLIT_PATH)#获取train_ids和valid_ids
 train_pids, valid_pids = train_valid_ids['train'], train_valid_ids['valid']
 
 train_data_iterator = data_iterators.PatchPositiveLunaDataGenerator(data_path=pathfinder.LUNA_DATA_PATH,
@@ -59,7 +59,7 @@ train_data_iterator = data_iterators.PatchPositiveLunaDataGenerator(data_path=pa
                                                                     data_prep_fun=data_prep_function_train,
                                                                     rng=rng,
                                                                     patient_ids=train_pids,
-                                                                    full_batch=True, random=True, infinite=True)
+                                                                    full_batch=True, random=True, infinite=True)# "LUNA_DATA_PATH": "/data/dsb3/luna/dataset_pkl/"
 
 valid_data_iterator = data_iterators.ValidPatchPositiveLunaDataGenerator(data_path=pathfinder.LUNA_DATA_PATH,
                                                                          transform_params=p_transform,
@@ -71,7 +71,7 @@ max_nchunks = nchunks_per_epoch * 30
 validate_every = int(2. * nchunks_per_epoch)
 save_every = int(0.5 * nchunks_per_epoch)
 
-learning_rate_schedule = {
+learning_rate_schedule = {#如何理解这一系列的学习率？？？？？？？？？？？？？？？
     0: 1e-5,
     int(max_nchunks * 0.4): 5e-6,
     int(max_nchunks * 0.5): 2e-6,
@@ -97,7 +97,7 @@ def conv_prelu_layer(l_in, n_filters):
     return l
 
 
-def build_model(l_in=None, patch_size=None):
+def build_model(l_in=None, patch_size=None):#建立网络模型
     patch_size = p_transform['patch_size'] if patch_size is None else patch_size
     l_in = nn.layers.InputLayer((None, 1,) + patch_size) if l_in is None else l_in
     l_target = nn.layers.InputLayer((None, 1,) + patch_size)
@@ -133,8 +133,8 @@ def build_model(l_in=None, patch_size=None):
     return namedtuple('Model', ['l_in', 'l_out', 'l_target'])(l_in, l_out, l_target)
 
 
-def build_objective(model, deterministic=False, epsilon=1e-12):
-    network_predictions = nn.layers.get_output(model.l_out, deterministic=deterministic)[:, 0, :, :, :]
+def build_objective(model, deterministic=False, epsilon=1e-12):#根据真实值和预测值的交集做损失函数
+    network_predictions = nn.layers.get_output(model.l_out, deterministic=deterministic)[:, 0, :, :, :]#为什么要这么做呢？
     target_values = nn.layers.get_output(model.l_target)[:, 0, :, :, :]
     network_predictions, target_values = nn.layers.merge.autocrop([network_predictions, target_values],
                                                                   [None, 'center', 'center', 'center'])
@@ -144,7 +144,7 @@ def build_objective(model, deterministic=False, epsilon=1e-12):
     intersection = T.sum(y_true_f * y_pred_f, axis=(1, 2, 3))
     dice_batch = (2. * intersection + epsilon) / (
         T.sum(y_true_f, axis=(1, 2, 3)) + T.sum(y_pred_f, axis=(1, 2, 3)) + epsilon)
-    return -1. * T.sum(dice_batch)
+    return -1. * T.sum(dice_batch)#为什么*-1呢？
 
 
 def build_updates(train_loss, model, learning_rate):
