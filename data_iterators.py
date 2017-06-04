@@ -348,25 +348,25 @@ class PatchPositiveLunaDataGenerator(object):
 
     def generate(self):
         while True:
-            rand_idxs = np.arange(self.nsamples)
+            rand_idxs = np.arange(self.nsamples)#np.arange。返回一个范围，这个 范围大小等于self.nsample。
             if self.random:
-                self.rng.shuffle(rand_idxs)
-            for pos in xrange(0, len(rand_idxs), self.batch_size):
-                idxs_batch = rand_idxs[pos:pos + self.batch_size]
-                nb = len(idxs_batch)
+                self.rng.shuffle(rand_idxs) #将所有元素随机排序
+            for pos in xrange(0, len(rand_idxs), self.batch_size):#生成的是一个生成器
+                idxs_batch = rand_idxs[pos:pos + self.batch_size]#
+                nb = len(idxs_batch) 
                 # allocate batches
-                x_batch = np.zeros((nb, 1) + self.transform_params['patch_size'], dtype='float32')
+                x_batch = np.zeros((nb, 1) + self.transform_params['patch_size'], dtype='float32')#设置零矩阵
                 y_batch = np.zeros((nb, 1) + self.transform_params['patch_size'], dtype='float32')
                 patients_ids = []
 
                 for i, idx in enumerate(idxs_batch):
-                    patient_path = self.patient_paths[idx]
-                    id = utils_lung.extract_pid_filename(patient_path)
-                    patients_ids.append(id)
+                    patient_path = self.patient_paths[idx] #"LUNA_DATA_PATH": "/mnt/sda3/data/kaggle-lung/seg-lungs-LUNA16"，放置病人.mhd文件
+                    id = utils_lung.extract_pid_filename(patient_path) #获取病人id
+                    patients_ids.append(id) #将病人id加入病人id列表
                     img, origin, pixel_spacing = utils_lung.read_mhd(patient_path)
 
                     patient_annotations = self.id2annotations[id]
-                    patch_center = patient_annotations[self.rng.randint(len(patient_annotations))]
+                    patch_center = patient_annotations[self.rng.randint(len(patient_annotations))]#randint()在区间内返回随机数
                     x_batch[i, 0, :, :, :], y_batch[i, 0, :, :, :] = self.data_prep_fun(data=img,
                                                                                         patch_center=patch_center,
                                                                                         pixel_spacing=pixel_spacing,
@@ -1367,7 +1367,7 @@ class DSBScanLungMaskDataGenerator(object):
     def __init__(self, data_path, transform_params, data_prep_fun, exclude_pids=None,
                  include_pids=None, part_out_of=(1, 1)):
 
-        self.patient_paths = utils_lung.get_patient_data_paths(data_path)
+        self.patient_paths = utils_lung.get_patient_data_paths(data_path) #返回排序后的数据路径集合
 
         this_part = part_out_of[0]
         all_parts = part_out_of[1]
@@ -1378,7 +1378,7 @@ class DSBScanLungMaskDataGenerator(object):
         else:
             self.patient_paths = self.patient_paths[part_lenght * (this_part - 1): part_lenght * this_part]
 
-        if exclude_pids is not None:
+        if exclude_pids is not None: #从self.patient_paths中摘除含有exclude_pids元素的项
             for ep in exclude_pids:
                 for i in xrange(len(self.patient_paths)):
                     if ep in self.patient_paths[i]:
@@ -1395,11 +1395,11 @@ class DSBScanLungMaskDataGenerator(object):
 
     def generate(self):
         for p in self.patient_paths:
-            pid = utils_lung.extract_pid_dir(p)
+            pid = utils_lung.extract_pid_dir(p) #返回数据文件文件名称
 
-            img, pixel_spacing = utils_lung.read_dicom_scan(p)
+            img, pixel_spacing = utils_lung.read_dicom_scan(p) #读取数据文件信息
 
-            x, lung_mask, tf_matrix = self.data_prep_fun(data=img, pixel_spacing=pixel_spacing)
+            x, lung_mask, tf_matrix = self.data_prep_fun(data=img, pixel_spacing=pixel_spacing) #这里调用数据处理函数，产生mask
 
             x = np.float32(x)[None, None, :, :, :]
             lung_mask = np.float32(lung_mask)[None, None, :, :, :]

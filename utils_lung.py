@@ -329,9 +329,9 @@ def cross_entropy(predictions, targets, epsilon=1e-12):
 
 def get_generated_pids(predictions_dir):
     pids = []
-    if os.path.isdir(predictions_dir):
-        pids = os.listdir(predictions_dir)
-        pids = [extract_pid_filename(p) for p in pids]
+    if os.path.isdir(predictions_dir): #判断路径是否存在
+        pids = os.listdir(predictions_dir) #获取目录中的内容
+        pids = [extract_pid_filename(p) for p in pids] #获取文件名并去掉后缀
     return pids
 
 def evaluate_log_loss(pid2prediction, pid2label):

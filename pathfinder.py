@@ -43,7 +43,7 @@ if not os.path.isfile(TEST_LABELS_PATH):
     raise ValueError('no file with test labels')
 
 VALIDATION_SPLIT_PATH = paths["VALIDATION_SPLIT_PATH"]
-if not os.path.isfile(VALIDATION_SPLIT_PATH):
+if not os.path.isfile(VALIDATION_SPLIT_PATH):#在指定路径下若文件存在，则返回True，否则返回False
     raise ValueError('no VALIDATION_SPLIT_PATH file')
 
 FINAL_SPLIT_PATH = paths["FINAL_SPLIT_PATH"]

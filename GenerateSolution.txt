@@ -2,7 +2,7 @@
     $ python elias/make_final_split.py
 2) $ cd ira
 3) In SETTINGS.json set STAGE to 1:
-            "STAGE": 1
+            "STAGE": 1  #先暂时理解为第一阶段
 4) Train segmentation networks on LUNA dataset: 
     $ python train_seg_patch.py luna_p8a1
     //md5sum 75b63363507b44632c778f3165812000  luna_p8a1-20170226-173608.pkl
