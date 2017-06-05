@@ -16,12 +16,12 @@ import pathfinder
 
 # theano.config.warn_float64 = 'raise'
 
-if len(sys.argv) < 2:
+if len(sys.argv) < 2:#接受命令行参数,0表示代码本身文件路径，要从1开始取参数
     sys.exit("Usage: train.py <configuration_name>")
 
-config_name = sys.argv[1]
-set_configuration('configs_seg_patch', config_name)
-expid = utils.generate_expid(config_name)
+config_name = sys.argv[1]#取出参数
+set_configuration('configs_seg_patch', config_name)#动态导入模块
+expid = utils.generate_expid(config_name)#返回带时间戳的模块名字
 print
 print "Experiment ID: %s" % expid
 print
@@ -31,49 +31,49 @@ metadata_dir = utils.get_dir_path('models', pathfinder.METADATA_PATH)
 metadata_path = metadata_dir + '/%s.pkl' % expid
 
 # logs
-logs_dir = utils.get_dir_path('logs', pathfinder.METADATA_PATH)
-sys.stdout = logger.Logger(logs_dir + '/%s.log' % expid)
+logs_dir = utils.get_dir_path('logs', pathfinder.METADATA_PATH)#获取文件路径
+sys.stdout = logger.Logger(logs_dir + '/%s.log' % expid)#获取Logger类一个对象
 sys.stderr = sys.stdout
 
 print 'Build model'
-model = config().build_model()
-all_layers = nn.layers.get_all_layers(model.l_out)
-all_params = nn.layers.get_all_params(model.l_out)
-num_params = nn.layers.count_params(model.l_out)
+model = config().build_model() #返回一个Model，包含(l_in, l_out, l_target)
+all_layers = nn.layers.get_all_layers(model.l_out) #返回所有层实例的一个列表
+all_params = nn.layers.get_all_params(model.l_out) #返回所有参数的一个列表
+num_params = nn.layers.count_params(model.l_out) #返回参数的数量
 print '  number of parameters: %d' % num_params
 print string.ljust('  layer output shapes:', 36),
 print string.ljust('#params:', 10),
 print 'output shape:'
 for layer in all_layers:
-    name = string.ljust(layer.__class__.__name__, 32)
-    num_param = sum([np.prod(p.get_value().shape) for p in layer.get_params()])
-    num_param = string.ljust(num_param.__str__(), 10)
+    name = string.ljust(layer.__class__.__name__, 32) #若长度不够32，则用空格填充至32，layer.__class__.__name__ ，获取已知对象的类名。如返回  'contr_1_1'
+    num_param = sum([np.prod(p.get_value().shape) for p in layer.get_params()]) #.shape返回矩阵的形状。np.prod：返回数组元素的乘积。get_params():获得每一层的参数;get_value()查看参数值
+    num_param = string.ljust(num_param.__str__(), 10) #.__str__()用来返回对象的字符串表达式
     print '    %s %s %s' % (name, num_param, layer.output_shape)
 
-train_loss = config().build_objective(model, deterministic=False)
-valid_loss = config().build_objective(model, deterministic=True)
+train_loss = config().build_objective(model, deterministic=False) #训练损失
+valid_loss = config().build_objective(model, deterministic=True) #验证损失
 
 learning_rate_schedule = config().learning_rate_schedule
-learning_rate = theano.shared(np.float32(learning_rate_schedule[0]))
-updates = config().build_updates(train_loss, model, learning_rate)
+learning_rate = theano.shared(np.float32(learning_rate_schedule[0])) #学习率的设置
+updates = config().build_updates(train_loss, model, learning_rate) #返回每个参数的更新表达式
 
-x_shared = nn.utils.shared_empty(dim=len(model.l_in.shape))
-y_shared = nn.utils.shared_empty(dim=len(model.l_target.shape))
+x_shared = nn.utils.shared_empty(dim=len(model.l_in.shape)) #创建一个指定维度的Theano共享变量
+y_shared = nn.utils.shared_empty(dim=len(model.l_target.shape)) #如上
 
-idx = T.lscalar('idx')
+idx = T.lscalar('idx') #变量声明
 givens_train = {}
-givens_train[model.l_in.input_var] = x_shared[idx * config().batch_size:(idx + 1) * config().batch_size]
-givens_train[model.l_target.input_var] = y_shared[idx * config().batch_size:(idx + 1) * config().batch_size]
+givens_train[model.l_in.input_var] = x_shared[idx * config().batch_size:(idx + 1) * config().batch_size] #获取训练输入数据。batch_size = 4
+givens_train[model.l_target.input_var] = y_shared[idx * config().batch_size:(idx + 1) * config().batch_size] #获取训练目标数据
 
 givens_valid = {}
 givens_valid[model.l_in.input_var] = x_shared
 givens_valid[model.l_target.input_var] = y_shared
 
 # theano functions
-iter_train = theano.function([idx], train_loss, givens=givens_train, updates=updates)
+iter_train = theano.function([idx], train_loss, givens=givens_train, updates=updates) #这里的 'idx' 到底是个什么东西？
 iter_get_predictions = theano.function([idx], nn.layers.get_output(model.l_out), givens=givens_train,
                                        on_unused_input='ignore')
-iter_get_targets = theano.function([idx], nn.layers.get_output(model.l_target), givens=givens_train,
+iter_get_targets = theano.function([idx], nn.layers.get_output(model.l_target), givens=givens_train, #get_output()计算输出
                                    on_unused_input='ignore')
 iter_get_inputs = theano.function([idx], nn.layers.get_output(model.l_in), givens=givens_train,
                                   on_unused_input='ignore')
@@ -82,7 +82,7 @@ iter_validate = theano.function([], valid_loss, givens=givens_valid)
 if config().restart_from_save:
     print 'Load model parameters for resuming'
     resume_metadata = utils.load_pkl(config().restart_from_save)
-    nn.layers.set_all_param_values(model.l_out, resume_metadata['param_values'])
+    nn.layers.set_all_param_values(model.l_out, resume_metadata['param_values'])#设置所有层的参数值
     start_chunk_idx = resume_metadata['chunks_since_start'] + 1
     chunk_idxs = range(start_chunk_idx, config().max_nchunks)
 

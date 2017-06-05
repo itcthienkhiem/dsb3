@@ -72,14 +72,14 @@ data_iterators = [data_iterator0, data_iterator1, data_iterator2, data_iterator3
 
 
 def build_model():
-    metadata_dir = utils.get_dir_path('models', pathfinder.METADATA_PATH)
-    metadata_path = utils.find_model_metadata(metadata_dir, patch_config.__name__.split('.')[-1])
-    metadata = utils.load_pkl(metadata_path)
+    metadata_dir = utils.get_dir_path('models', pathfinder.METADATA_PATH)　#连接路径
+    metadata_path = utils.find_model_metadata(metadata_dir, patch_config.__name__.split('.')[-1]) #patch_config是上一个步骤中训练模型的那个文件；
+    metadata = utils.load_pkl(metadata_path) #载入参数
 
     print 'Build model'
-    model = patch_config.build_model(patch_size=(window_size, window_size, window_size))
-    all_layers = nn.layers.get_all_layers(model.l_out)
-    num_params = nn.layers.count_params(model.l_out)
+    model = patch_config.build_model(patch_size=(window_size, window_size, window_size)) #获取模型
+    all_layers = nn.layers.get_all_layers(model.l_out) #得到所有层的实例
+    num_params = nn.layers.count_params(model.l_out) #得到参数的数量
     print '  number of parameters: %d' % num_params
     print string.ljust('  layer output shapes:', 36),
     print string.ljust('#params:', 10),
@@ -90,5 +90,5 @@ def build_model():
         num_param = string.ljust(num_param.__str__(), 10)
         print '    %s %s %s' % (name, num_param, layer.output_shape)
 
-    nn.layers.set_all_param_values(model.l_out, metadata['param_values'])
-    return model
+    nn.layers.set_all_param_values(model.l_out, metadata['param_values'])  #设置模型的参数
+    return model #返回这个模型

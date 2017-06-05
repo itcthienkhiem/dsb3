@@ -80,26 +80,26 @@ learning_rate_schedule = {#如何理解这一系列的学习率？？？？？�
 }
 
 # model
-conv3d = partial(dnn.Conv3DDNNLayer,
+conv3d = partial(dnn.Conv3DDNNLayer,#进行3D卷积的函数
                  filter_size=3,
-                 pad='valid',
-                 W=nn.init.Orthogonal('relu'),
-                 b=nn.init.Constant(0.0),
-                 nonlinearity=nn.nonlinearities.identity)
+                 pad='valid',#0的别名
+                 W=nn.init.Orthogonal('relu'),#用正交矩阵初始化权重
+                 b=nn.init.Constant(0.0),#用0初始化权重
+                 nonlinearity=nn.nonlinearities.identity)  #偏函数，作用是固定函数dnn.Conv3DDNNLayer的一部分参数
 
 max_pool3d = partial(dnn.MaxPool3DDNNLayer,
                      pool_size=2)
 
 
 def conv_prelu_layer(l_in, n_filters):
-    l = conv3d(l_in, n_filters)
+    l = conv3d(l_in, n_filters) #实现卷积层
     l = nn.layers.ParametricRectifierLayer(l)
     return l
 
 
 def build_model(l_in=None, patch_size=None):#建立网络模型
     patch_size = p_transform['patch_size'] if patch_size is None else patch_size
-    l_in = nn.layers.InputLayer((None, 1,) + patch_size) if l_in is None else l_in
+    l_in = nn.layers.InputLayer((None, 1,) + patch_size) if l_in is None else l_in #网络输入
     l_target = nn.layers.InputLayer((None, 1,) + patch_size)
 
     net = {}
