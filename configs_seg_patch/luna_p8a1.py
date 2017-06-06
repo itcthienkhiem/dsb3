@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# encoding: utf-8
 import numpy as np
 import data_transforms
 import data_iterators
@@ -50,10 +52,10 @@ batch_size = 4
 nbatches_chunk = 8
 chunk_size = batch_size * nbatches_chunk
 
-train_valid_ids = utils.load_pkl(pathfinder.LUNA_VALIDATION_SPLIT_PATH)#获取train_ids和valid_ids
+train_valid_ids = utils.load_pkl(pathfinder.TIANCHI_VALIDATION_SPLIT_PATH)#获取train_ids和valid_ids
 train_pids, valid_pids = train_valid_ids['train'], train_valid_ids['valid']
 
-train_data_iterator = data_iterators.PatchPositiveLunaDataGenerator(data_path=pathfinder.LUNA_DATA_PATH,
+train_data_iterator = data_iterators.PatchPositiveLunaDataGenerator(data_path=pathfinder.TIANCHI_DATA_PATH,
                                                                     batch_size=chunk_size,
                                                                     transform_params=p_transform,
                                                                     data_prep_fun=data_prep_function_train,

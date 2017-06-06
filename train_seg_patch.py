@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# encoding: utf-8
 import cPickle as pickle
 import string
 import sys
@@ -27,11 +29,11 @@ print "Experiment ID: %s" % expid
 print
 
 # metadata
-metadata_dir = utils.get_dir_path('models', pathfinder.METADATA_PATH)
-metadata_path = metadata_dir + '/%s.pkl' % expid
+metadata_dir = utils.get_dir_path('models', pathfinder.TIANCHI_METADATA_PATH)# "METADATA_PATH_1": "/mnt/storage/metadata/dsb3/"
+metadata_path = metadata_dir + '/%s.pkl' % expid#放置结果的位置【注意，数据是分批次执行的，因此每个批次都要保存】
 
 # logs
-logs_dir = utils.get_dir_path('logs', pathfinder.METADATA_PATH)#获取文件路径
+logs_dir = utils.get_dir_path('logs', pathfinder.TIANCHI_METADATA_PATH)#获取文件路径
 sys.stdout = logger.Logger(logs_dir + '/%s.log' % expid)#获取Logger类一个对象
 sys.stderr = sys.stdout
 
@@ -66,7 +68,7 @@ givens_train[model.l_in.input_var] = x_shared[idx * config().batch_size:(idx + 1
 givens_train[model.l_target.input_var] = y_shared[idx * config().batch_size:(idx + 1) * config().batch_size] #获取训练目标数据
 
 givens_valid = {}
-givens_valid[model.l_in.input_var] = x_shared
+givens_valid[model.l_in.input_var] = x_shared#Q：为什么验证集是这个size？【A：因为验证时不分批】
 givens_valid[model.l_target.input_var] = y_shared
 
 # theano functions
@@ -79,26 +81,26 @@ iter_get_inputs = theano.function([idx], nn.layers.get_output(model.l_in), given
                                   on_unused_input='ignore')
 iter_validate = theano.function([], valid_loss, givens=givens_valid)
 
-if config().restart_from_save:
+if config().restart_from_save:#分批次训练，中断后从上一次的位置开始
     print 'Load model parameters for resuming'
     resume_metadata = utils.load_pkl(config().restart_from_save)
     nn.layers.set_all_param_values(model.l_out, resume_metadata['param_values'])#设置所有层的参数值
-    start_chunk_idx = resume_metadata['chunks_since_start'] + 1
-    chunk_idxs = range(start_chunk_idx, config().max_nchunks)
+    start_chunk_idx = resume_metadata['chunks_since_start'] + 1#从上一次终止的下一个位置开始
+    chunk_idxs = range(start_chunk_idx, config().max_nchunks)#剩下的为训练模块的范围
 
     lr = np.float32(utils.current_learning_rate(learning_rate_schedule, start_chunk_idx))
     print '  setting learning rate to %.7f' % lr
     learning_rate.set_value(lr)
     losses_eval_train = resume_metadata['losses_eval_train']
     losses_eval_valid = resume_metadata['losses_eval_valid']
-else:
+else:#从0开始
     chunk_idxs = range(config().max_nchunks)
     losses_eval_train = []
     losses_eval_valid = []
     start_chunk_idx = 0
 
-train_data_iterator = config().train_data_iterator
-valid_data_iterator = config().valid_data_iterator
+train_data_iterator = config().train_data_iterator#训练迭代器
+valid_data_iterator = config().valid_data_iterator#验证迭代器
 
 print
 print 'Data'
@@ -113,7 +115,7 @@ start_time = time.time()
 prev_time = start_time
 tmp_losses_train = []
 
-# use buffering.buffered_gen_threaded()
+# use buffering.buffered_gen_threaded()#开始获取数据训练，训练数据的来源：train_data_iterator.generate()
 for chunk_idx, (x_chunk_train, y_chunk_train, id_train) in izip(chunk_idxs, buffering.buffered_gen_threaded(
         train_data_iterator.generate())):
     if chunk_idx in learning_rate_schedule:
