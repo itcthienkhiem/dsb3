@@ -9,4 +9,10 @@
   "LUNA_LABELS_PATH": "/mnt/sda3/data/kaggle-lung/annotations.csv",
   "LUNA_CANDIDATES_PATH": "/mnt/sda3/data/kaggle-lung/candidates_V2.csv",
   "LUNA_VALIDATION_SPLIT_PATH": "/mnt/sda3/data/kaggle-lung/luna_validation_split.pkl"
+  
+  #DeepDataPAI Path
+  "TIANCHI_VALIDATION_SPLIT_PATH": "/home/ubuntu/LungCompetition/TianChiData/validation_split.pkl"
+  "TIANCHI_LABELS_PATH": "/home/ubuntu/LungCompetition/TianChiData/csv/train/annotations.csv"
+  "TIANCHI_DATA_PATH": "/home/ubuntu/LungCompetition/TianChiData/train_subset00"
+  "TIANCHI_METADATA_PATH":"/home/ubuntu/LungCompetition/TianChiData/output"
 }

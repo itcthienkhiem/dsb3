@@ -43,7 +43,7 @@ if not os.path.isfile(TEST_LABELS_PATH):
     raise ValueError('no file with test labels')
 
 VALIDATION_SPLIT_PATH = paths["VALIDATION_SPLIT_PATH"]
-if not os.path.isfile(VALIDATION_SPLIT_PATH):#在指定路径下若文件存在，则返回True，否则返回False
+if not os.path.isfile(VALIDATION_SPLIT_PATH):
     raise ValueError('no VALIDATION_SPLIT_PATH file')
 
 FINAL_SPLIT_PATH = paths["FINAL_SPLIT_PATH"]
@@ -79,3 +79,16 @@ if not os.path.isfile(LUNA_PROPERTIES_PATH):
 VALIDATION_LB_MIXED_SPLIT_PATH = paths['VALIDATION_LB_MIXED_SPLIT_PATH']
 if not os.path.isfile(VALIDATION_LB_MIXED_SPLIT_PATH):
     raise ValueError('no mixed validation and LB file')
+
+#DeepDataPAI paths
+TIANCHI_VALIDATION_SPLIT_PATH = paths['TIANCHI_VALIDATION_SPLIT_PATH']
+if not os.path.isfile(TIANCHI_VALIDATION_SPLIT_PATH):
+    raise ValueError('no train validation ids files')
+
+TIANCHI_LABELS_PATH = paths['TIANCHI_LABELS_PATH']
+if not os.path.isfile(TIANCHI_LABELS_PATH):
+    raise ValueError('no train label files')
+
+TIANCHI_DATA_PATH = paths['TIANCHI_DATA_PATH']
+
+TIANCHI_METADATA_PATH = paths['TIANCHI_METADATA_PATH']

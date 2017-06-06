@@ -19,7 +19,12 @@
   "LUNA_VALIDATION_SPLIT_PATH": "/home/eavsteen/dsb3/storage/data/dsb3/luna/validation_split.pkl",
   "LUNA_NODULE_ANNOTATIONS":"/mnt/storage/data/dsb3/luna/nodule_annotations_2",
   "VALIDATION_LB_MIXED_SPLIT_PATH":"/home/eavsteen/dsb3/storage/data/dsb3/dsb_validation_lb_mixed_split.pkl",
-  "LUNA_PROPERTIES_PATH": "/home/eavsteen/dsb3/storage/data/annotations_extended_mixed.csv"
+  "LUNA_PROPERTIES_PATH": "/home/eavsteen/dsb3/storage/data/annotations_extended_mixed.csv",
+  
+  "TIANCHI_VALIDATION_SPLIT_PATH": "/home/ubuntu/LungCompetition/TianChiData/validation_split.pkl",
+  "TIANCHI_LABELS_PATH": "/home/ubuntu/LungCompetition/TianChiData/csv/train/annotations.csv",
+  "TIANCHI_DATA_PATH": "/home/ubuntu/LungCompetition/TianChiData/train_subset00",
+  "TIANCHI_METADATA_PATH":"/home/ubuntu/LungCompetition/TianChiData/output"
 }
 
 
