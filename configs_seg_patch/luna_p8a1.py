@@ -63,7 +63,7 @@ train_data_iterator = data_iterators.PatchPositiveLunaDataGenerator(data_path=pa
                                                                     patient_ids=train_pids,
                                                                     full_batch=True, random=True, infinite=True)# "LUNA_DATA_PATH": "/data/dsb3/luna/dataset_pkl/"
 
-valid_data_iterator = data_iterators.ValidPatchPositiveLunaDataGenerator(data_path=pathfinder.LUNA_DATA_PATH,
+valid_data_iterator = data_iterators.ValidPatchPositiveLunaDataGenerator(data_path=pathfinder.TIANCHI_DATA_PATH,
                                                                          transform_params=p_transform,
                                                                          data_prep_fun=data_prep_function_valid,
                                                                          patient_ids=valid_pids)

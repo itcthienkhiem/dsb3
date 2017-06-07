@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# encoding: utf-8
 import dicom
 import SimpleITK as sitk
 import numpy as np
