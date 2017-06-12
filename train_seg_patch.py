@@ -72,9 +72,10 @@ givens_valid[model.l_in.input_var] = x_shared#Q：为什么验证集是这个siz
 givens_valid[model.l_target.input_var] = y_shared
 
 # theano functions
-iter_train = theano.function([idx], train_loss, givens=givens_train, updates=updates) #这里的 'idx' 到底是个什么东西？
-iter_get_predictions = theano.function([idx], nn.layers.get_output(model.l_out), givens=givens_train,
-                                       on_unused_input='ignore')
+iter_get_predictions = theano.function([idx], nn.layers.get_output(model.l_out), givens=givens_train,on_unused_input='ignore')
+
+iter_train = theano.function([idx], train_loss, givens=givens_train, updates=updates)
+
 iter_get_targets = theano.function([idx], nn.layers.get_output(model.l_target), givens=givens_train, #get_output()计算输出
                                    on_unused_input='ignore')
 iter_get_inputs = theano.function([idx], nn.layers.get_output(model.l_in), givens=givens_train,

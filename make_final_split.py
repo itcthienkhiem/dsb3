@@ -6,12 +6,12 @@ import utils_lung
 import pathfinder
 #基本思路
 
-	# 1. 把train, val, test的病人id统计到all_pids中；
-	# 2. 把标注的csv中的病人统计到n_patients中；
-	# 3. 把n_patients中正样本的15%和负样本的15%作为整体的测试样本final_test；
-	# 4. 把all_pids中排除掉n_patients部分，统计出final_pos_train和final_neg_train，整体为final_train；
-	# 5. 把final_train, final_test存入到"final_split.pkl"中；
-	
+    # 1. 把train, val, test的病人id统计到all_pids中；
+    # 2. 把标注的csv中的病人统计到n_patients中；
+    # 3. 把n_patients中正样本的15%和负样本的15%作为整体的测试样本final_test；
+    # 4. 把all_pids中排除掉n_patients部分，统计出final_pos_train和final_neg_train，整体为final_train；
+    # 5. 把final_train, final_test存入到"final_split.pkl"中；
+    
 #计算机实现的随机数生成通常为伪随机数生成器，为了使得具备随机性的代码最终的结果可复现，需要设置相同的种子值；
 #使用 np.random.RandomState()获取随机数生成器
 rng = np.random.RandomState(42)
@@ -31,12 +31,12 @@ pos_ids = []#存储癌症患者的病人ID
 neg_ids = []#存储非癌症患者的病人ID
 
 for pid, label in id2label.iteritems():
-	if label ==1 :
-		pos_ids.append(pid)
-	elif label == 0 :
-		neg_ids.append(pid)
-	else:
-		raise ValueError("weird shit is going down")
+    if label ==1 :
+        pos_ids.append(pid)
+    elif label == 0 :
+        neg_ids.append(pid)
+    else:
+        raise ValueError("weird shit is going down")
 
 pos_ratio = 1. * len(pos_ids) / n_patients #计算癌症患者在病人当中所占的比例
 print 'pos id ratio', pos_ratio
@@ -52,24 +52,24 @@ n_neg_ftest = int(np.round(split_ratio*len(neg_ids)))#从非癌症病人中分�
 final_pos_test = rng.choice(pos_ids,n_pos_ftest, replace=False)
 final_neg_test = rng.choice(neg_ids,n_neg_ftest, replace=False)
 final_test = np.append(final_pos_test,final_neg_test)
-print 'pos id ratio final test set', 1.*len(final_pos_test) / (len(final_test))	
+print 'pos id ratio final test set', 1.*len(final_pos_test) / (len(final_test)) 
 
 final_train = []
 final_pos_train = []
 final_neg_train = []
 for pid in all_pids:
-	if pid not in final_test:
-		final_train.append(pid)
-		if id2label[pid] == 1:
-			final_pos_train.append(pid)
-		elif id2label[pid] == 0:
-			final_neg_train.append(pid)
-		else:
-			raise ValueError("weird shit is going down")
+    if pid not in final_test:
+        final_train.append(pid)
+        if id2label[pid] == 1:
+            final_pos_train.append(pid)
+        elif id2label[pid] == 0:
+            final_neg_train.append(pid)
+        else:
+            raise ValueError("weird shit is going down")
 
 
 
-print 'pos id ratio final train set', 1.*len(final_pos_train) / (len(final_train))	
+print 'pos id ratio final train set', 1.*len(final_pos_train) / (len(final_train))  
 print 'final test/(train+test):', 1.*len(final_test) / (len(final_train) + len(final_test))
 
 concat_str = ''.join(final_test)
