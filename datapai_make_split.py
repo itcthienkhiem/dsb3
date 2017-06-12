@@ -5,13 +5,13 @@ from glob import glob
 import pandas as pd
 import utils
 
-datapath = "/home/ubuntu/LungCompetition/TianChiData"
+datapath = "E:/LungCompetition/Lunna"
 class Split(object):
     def __init__(self, datapath):
       self.datapath = datapath
-      self.all_patients_path = os.path.join(self.datapath, "train_subset00/")
+      self.all_patients_path = os.path.join(self.datapath, "subset0/")
       self.ls_all_patients = glob(self.all_patients_path + "*.mhd")
-      self.df_annotations = pd.read_csv(self.datapath + "/csv/train/annotations.csv")
+      self.df_annotations = pd.read_csv(self.datapath + "/CSVFILES/annotations.csv")
       self.ratio = 0.8
       self.patient_ids = []#从文件名中获取病人的id
       self.train_ids = []
